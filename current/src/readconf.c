@@ -17,7 +17,7 @@ readConf( int verbose ) {
 	char mf[] = "nms@tyneo.net";
 	char ms[] = "NMs: change status to %status";
 	char mm[] = "ALERT : your %server:%port change status to %status";
-	char msrv[] = "192.168.1.10";
+	char msrv[] = "mail.tyneo.com";
 
 
 	confNMs.fileLog = (char *) malloc( 1 + strlen( fl ) );

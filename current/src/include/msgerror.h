@@ -10,6 +10,8 @@
 #define ERR_ARG 5
 #define ERR_SCK 6
 #define ERR_WT_FL 7
+#define ERR_PROTO 8
+
 
 /********
 * Fonction msgError()

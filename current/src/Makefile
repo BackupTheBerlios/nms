@@ -6,8 +6,8 @@ EXEC	=	nms
 
 .KEEP_STATE:
 
-all:		nms.o parse.o perror.o tcp.o file.o libchar.o sendmail.o test.o readconf.o
-		$(CC) -o $(EXEC) $(FLAGS) nms.o parse.o perror.o tcp.o file.o libchar.o sendmail.o test.o readconf.o
+all:		nms.o parse.o perror.o tcp.o netsock.c file.o libchar.o sendmail.o test.o readconf.o
+		$(CC) -o $(EXEC) $(FLAGS) nms.o parse.o perror.o tcp.o netsock.c file.o libchar.o sendmail.o test.o readconf.o
 
 nms.o:		nms.c
 		$(CC) $(FLAGS) -c nms.c
@@ -17,6 +17,8 @@ perror.o:	perror.c
 		$(CC) $(FLAGS) -c perror.c
 tcp.o:		tcp.c
 		$(CC) $(FLAGS) -c tcp.c
+netsock.o:		netsock.c
+		$(CC) $(FLAGS) -c netsock.c
 file.o:		file.c
 		$(CC) $(FLAGS) -c file.c
 libchar.o:	libs/libchar.c

@@ -7,6 +7,7 @@
 #include "include/struct.h"
 #include "include/structconf.h"
 #include "include/tcp.h"
+#include "include/netsock.h"
 #include "include/sendmail.h"
 #include "include/msgerror.h"
 #include "include/libchar.h"
@@ -28,12 +29,54 @@ addsymb( char *strSource ,  char *status , char *server , char *port) {
 	
 	return buffer;
 }
+void bla ( list *adrPtrList , conf confNMs , int verbose, int value, int n) {
+	char *buff1, *buff2;
+	
+	if(value > 0) /* serveur UP */
+	{
+		if( 1 == adrPtrList ->sPort[n][1] ) {
+			if( 1 == verbose)
+				printf( " Change status to up!\n" );
+			adrPtrList ->sPort[n][1] = 0;
+			
+			buff1 = addsymb( confNMs.mailSubject, "up", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
+			buff2 = addsymb( confNMs.mailMsg, "up", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
+			sendMail("skauffmann@tyneo.net", confNMs.mailFrom, buff1, buff2, verbose);
+			/* Libération de la mémoire */
+			free(buff1); free(buff2);
+			
+			//wLog( confNMs , "serveur UP", WL_INFO );
+		}
+		else
+			if( 1 == verbose)
+				printf( " Status is always alive.\n" );
+		/* ferme le socket */
+		close(value);
+	}
+	
+	
+	if( 0 == adrPtrList ->sPort[n][1] ) {
+		if( 1 == verbose ) {
+			printf( " Change status to down!\n" );
+		}
+		adrPtrList ->sPort[n][1] = 1;
+		buff1 = addsymb( confNMs.mailSubject, "down", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
+		buff2 = addsymb( confNMs.mailMsg, "down", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
+		sendMail("skauffmann@tyneo.net", confNMs.mailFrom, buff1, buff2, verbose);
+		/* Libération de la mémoire */
+		free(buff1); free(buff2);
+		
+		//wLog( confNMs , "serveur DOWN", WL_WARNING );
+	}
+	else
+	if( 1 == verbose )
+		printf(" Status is always down!\n");
+}
 
 void 
 testConnect( list *ptrList , conf confNMs , int verbose ) {
 	int value, n, sSocket;
 	list *adrPtrList;
-	char *buff1, *buff2;
 	
 	while( 1 ) {
 		adrPtrList = ptrList;
@@ -48,61 +91,12 @@ testConnect( list *ptrList , conf confNMs , int verbose ) {
 			}
 			
 			for( n = 0 ; adrPtrList->sPort[n][0] != -9999 ; n++ ) {
-				value = sconnect( adrPtrList ->sIp , adrPtrList ->sPort[n][0], &sSocket );
-			
-				switch(value) {
-					// Echec résolution DNS
-					case ERR_DNS: ///
-						break;
-
-					// Serveur indisponible
-					case SRV_DOWN:
-						if( 0 == adrPtrList ->sPort[n][1] ) {
-							if( 1 == verbose ) {
-								printf( " Change status to down!\n" );
-							}
-							adrPtrList ->sPort[n][1] = 1;
-
-							buff1 = addsymb( confNMs.mailSubject, "down", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
-							buff2 = addsymb( confNMs.mailMsg, "down", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
-							sendMail("skauffmann@tyneo.net", confNMs.mailFrom, buff1, buff2, verbose);
-							/* Libération de la mémoire */
-							free(buff1); free(buff2);
-
-							wLog( confNMs , adrPtrList ->sIp , myitoa( adrPtrList->sPort[n][0] ) , 0 );
-						}
-						else
-							if( 1 == verbose ) {
-								printf(" Status is always down!\n");
-							}
-						break;
-
-					// Serveur accecible
-					case SRV_UP:
-						if( 1 == adrPtrList ->sPort[n][1] ) {
-							if( 1 == verbose) {
-								printf( " Change status to up!\n" );
-							}
-							adrPtrList ->sPort[n][1] = 0;
-							buff1 = addsymb( confNMs.mailSubject, "up", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
-							buff2 = addsymb( confNMs.mailMsg, "up", adrPtrList ->sIp, myitoa( adrPtrList->sPort[n][0] ) );
-
-							sendMail("skauffmann@tyneo.net", confNMs.mailFrom, buff1, buff2, verbose);
-							wLog( confNMs , adrPtrList ->sIp , myitoa( adrPtrList->sPort[n][0] ) , 0 );
-						}
-						else
-							if( 1 == verbose) {
-								printf( " Status is always alive.\n" );
-							}
-						sclose(sSocket);
-						break;
-
-					// Code inconnu
-					default: printf("heu??");
-				}
+				value = setsock( adrPtrList ->sName , adrPtrList->sPort[n][0] , adrPtrList ->sProto );
+				bla(adrPtrList , confNMs, verbose, value, n);
 			}
 			adrPtrList++;
-		} while ( strcmp( adrPtrList->sName , "NULL" ) ); // Tant que la sentinelle n'est pas atteinte on boucle.
+		} while ( strcmp( adrPtrList->sName , "NULL" ) ); 
+		// Tant que la sentinelle n'est pas atteinte on boucle.
 
 		/*
 		 * :INFO: Pause 

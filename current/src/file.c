@@ -6,7 +6,7 @@
 #include "include/msgerror.h"
 #include "include/struct.h"
 #include "include/libchar.h"
-//#include "include/parse.h"
+#include "include/file.h"
 #include "include/structconf.h"
 
 extern int parse( char* , list* );
@@ -26,9 +26,9 @@ openFile( char *fileSrc , char *mode ) {
 }
 
 void 
-wLog( conf confNMs , char *string1 , char *string2 , int status ) {
+wLog( conf confNMs , char *string , int status ) {
 	char *buffer, *sdate, *ptr;
-	int taille;
+	int taille=0;
 	
 	FILE *fpSrc;
 	time_t date;
@@ -36,61 +36,50 @@ wLog( conf confNMs , char *string1 , char *string2 , int status ) {
 	/* On récuprère la date avec l'heure */
 	time( &date );
 	
-	if( 1 == status ) {
-		/*
-		 * :INFO: Si status == UP 
-		 */
-		taille = strlen( ctime( &date ) ) + strlen( string1 ) + strlen( string2 ) + 8;
+	
+	/*
+	 * :INFO: WARNING / ERROR / INFO
+	 */
+	 if( WL_WARNING == status )
+		 taille = 7;
+	 else if( WL_ERROR == status )
+		 taille == 5;
+	 else 
+		 taille == 4;
+	 
+	taille += strlen( ctime( &date ) ) + strlen( string ) + 7;
+	buffer = (char *) malloc( taille + 1 );
+	if( NULL == buffer ) {
+		msgError(ERR_MALL);
+	}
+	
+	strcpy( buffer , "[" );
+	sdate = (char *) malloc( strlen( ctime( &date ) ) + 1 );
+	if( NULL == sdate ) {
+		msgError(ERR_MALL);
+	}
+	strcpy( sdate , ctime( &date ) );
+		
+	/* Supprime le caractère de fin de ligne que ctime() à ajouté */
+	ptr = strchr(sdate, '\n');
+	*ptr = '\0';
+		
+	strcat( buffer , sdate );
+	strcat( buffer , "] " );
+	
+	/*
+	 * :INFO: WARNING / ERROR / INFO
+	 */
+	 if( WL_WARNING == status )
+		 strcat( buffer , "WARNING: " );
+	 else if( WL_ERROR == status )
+		 strcat( buffer , "ERROR: " );
+	 else 
+		 strcat( buffer , "INFO: " );
+	 
+	strcat( buffer , string );
+	
 
-		buffer = (char *) malloc( taille + 1 );
-		if( NULL == buffer ) {
-			msgError(ERR_MALL);
-		}
-		strcpy( buffer , "[" );
-		sdate = (char *) malloc( strlen( ctime( &date ) ) + 1 );
-		if( NULL == sdate ) {
-			msgError(ERR_MALL);
-		}
-		strcpy( sdate , ctime( &date ) );
-		
-		/* Supprime le caractère de fin de ligne que ctime() à ajouté */
-		ptr = strchr(sdate, '\n');
-		*ptr = '\0';
-		
-		strcat( buffer , sdate );
-		strcat( buffer , "] " );
-		strcat( buffer , string1 );
-		strcat( buffer , ":" );
-		strcat( buffer , string2 );
-		strcat( buffer , " UP\n");
-	}
-	else {
-		/*
-		 * :INFO: Si status == DOWN
-		 */
-		taille = sizeof( ctime( &date ) ) + sizeof( string1 ) + sizeof( string2 ) + 10;
-		buffer = (char *) malloc( taille + 1 );
-		if( NULL == buffer ) {
-			msgError(ERR_MALL);
-		}
-		strcpy( buffer , "[" );
-		sdate = (char *) malloc( sizeof( ctime( &date ) ) + 1 );
-		if( NULL == sdate ) {
-			msgError(ERR_MALL);
-		}
-		strcpy( sdate , ctime( &date ) );
-		
-		/* Supprime le caractère de fin de ligne que ctime() à ajouté */
-		ptr = strchr(sdate, '\n');
-		*ptr = '\0';
-		
-		strcat( buffer , sdate );
-		strcat( buffer , "] " );
-		strcat( buffer , string1 );
-		strcat( buffer , ":" );
-		strcat( buffer , string2 );
-		strcat( buffer , " DOWN\n");
-	}
 
 	/* 
 	 * :INFO: Ouverture du fichier en mode append
@@ -110,8 +99,8 @@ wLog( conf confNMs , char *string1 , char *string2 , int status ) {
 	 * :ERROR: *** glibc detected *** free(): invalid next size (fast): 0x0804c198 ***
 	 * Quand on libère la mémoire on obtient cette erreur
 	 */
-	//free(sdate);
-	//free(buffer);
+	free(sdate);
+	free(buffer);
 }
 
 

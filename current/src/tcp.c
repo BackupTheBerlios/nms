@@ -50,7 +50,8 @@ int sconnect(char *sName, int sPort, int *sSocket)
 	serverSockAddr.sin_family = AF_INET;
 
 	*sSocket = socket(AF_INET, SOCK_STREAM, 0);
-	
+	if(*sSocket<0)
+		exit(SRV_DOWN);
 	/*
 	* :INFO: Connexion au Serveur:Port
 	*/
