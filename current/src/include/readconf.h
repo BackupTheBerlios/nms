@@ -1,1 +1,0 @@
-extern conf readConf( int );
