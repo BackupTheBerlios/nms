@@ -34,7 +34,7 @@ main(int argc, char *argv[]) {
 	 * :INFO: Configuration générale de NMs
 	 */
 	confNMs = readConf( verbose );
-	wLog( confNMs , "NMs" , " Program" , 1 ); // NMs started!
+	//wLog( confNMs , "NMs" , " Program" , 1 ); // NMs started!
 	
 	/*
 	 * :INFO: lit et parse de fichier des serveurs
