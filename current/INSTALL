@@ -1,0 +1,9 @@
+INSTALL:
+$ cd src/
+$ make
+$ make install
+Edit the config file /usr/local/NMs/etc/nms.conf
+Edit the data base file /usr/local/NMs/etc/server.db
+To start NMs tape :
+$ /usr/local/NMs/bin/nms
+ 

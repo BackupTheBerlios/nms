@@ -1,0 +1,16 @@
+
+
+------------------------------------------------------------------------------
++ Note du Sun Nov 14 04:41:21 CET 2004
+Bug dans file.c :
+	ptrList = (list *) malloc(sizeof(list));
+	if(ptrList == NULL)
+		msgError(2);
+	strcpy(ptrList->sName,"NULL");
+	printf("je passe par la!");
+	adrPtrList = ptrList;
+	adrPtrList++;
+donne un Segmentation fault.
+je n'ai aucune idee pour resoudre le probleme.
+------------------------------------------------------------------------------
+

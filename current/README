@@ -1,0 +1,59 @@
+------------------------------------------------------------------------------
+                     NMs - Network Monitoring System
+------------------------------------------------------------------------------
+# I  N  D  E  X
+
+A  Francais
+   1.1 Description
+   1.2 Avantages
+   1.3 Astuces
+   1.4 Installation
+
+B  English
+   2.1
+   2.2
+   2.3
+   2.4
+
+A. FRANCAIS
+------------------------------------------------------------------------------
+o DESCRIPTION
+  NMs est un logiciel de surveillance de serveur basé sur un système de 
+  question/réponse.
+  Le programme pose une question au serveur si celui répond alors le serveur 
+  est opérationnel, si le serveur ne donne pas de réponse alors le 
+  serveur est en panne ou inaccéssible.
+
+  Shéma logique :
+  +--------------------+
+  | NMs - software     |--------------+
+  +--------------------+              |
+   \                                  |  
+    +--------------------+        +---+----+
+    |Questionne le       |        | boucle |
+    |   serveur          |        +---+----+
+    +--------------------+            |
+     \                          +-----+-----+
+      +--------------------+    |           |
+      |Reponse : OK        |----+           |
+      |--------------------|           +----+---+
+      |Pas de reponse : NO |-----------| ALERTE |
+      +--------------------+           +--------+
+
+
+o AVANTAGES
+  $ Le logiciel NMs ne s'installe pas sur les serveurs qu'il surveille. Cela 
+  permet de garantir une grande fléxibilité des systèmes d'exploitation.
+  $ En installant un seul logiciel qui surveille une multitude de serveurs, 
+  les données sont centralisées.
+
+o ASTUCES
+
+
+o INSTALLATION
+Reportez vous au fichier "INSTALL".
+
+
+A. ENGLISH
+------------------------------------------------------------------------------
+
